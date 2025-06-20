@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest # Or ubuntu-24.04
 
     steps:        
-      - name: Remove conflicting containerd packages
-        run: |
-          sudo apt-get remove -y containerd containerd.io || true
+      # - name: Remove conflicting containerd packages
+      #   run: |
+      #     sudo apt-get remove -y containerd containerd.io || true
 
       - name: Ensure Docker is running
         run: |
