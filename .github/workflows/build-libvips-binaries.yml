@@ -1,0 +1,45 @@
+name: Build libvips Windows Binaries
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  # push: # Uncomment if you want to trigger on push to main/master
+  #   branches:
+  #     - main
+
+jobs:
+  build_binaries:
+    runs-on: ubuntu-latest # Or ubuntu-24.04, as used for the OCI image build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull the MXE build image
+        run: |
+          docker pull ghcr.io/${{ github.repository }}:latest
+          # Or, if you want a specific SHA:
+          # docker pull ghcr.io/${{ github.repository }}:sha-e41f5c7
+
+      - name: Make build.sh executable
+        run: chmod +x ./build.sh # Ensure the script is executable
+
+      - name: Run libvips MXE build
+        # This command runs the previously built Docker image
+        # and executes the build.sh script inside it.
+        # It also mounts the current repo directory into the container
+        # so build.sh can access source files and write output.
+        run: |
+          docker run \
+            --rm \
+            -v "$(pwd):/src" \
+            ghcr.io/${{ github.repository }}:latest \
+            /src/build.sh
+        # You might add arguments to build.sh here, e.g.:
+        # /src/build.sh --target x86_64-w64-mingw32 --nightly
+
+      - name: Upload Windows Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: libvips-windows-binaries
+          path: ./releases/ # Adjust this path based on where build.sh places the output
+          # You might need to be more specific, e.g., ./releases/*.zip
