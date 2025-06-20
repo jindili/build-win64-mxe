@@ -8,9 +8,12 @@ jobs:
     runs-on: ubuntu-latest # Or ubuntu-24.04
 
     steps:
-      - name: Install Docker (official script)
+      - name: Install Docker
         run: |
-          curl -fsSL https://get.docker.com | sh
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo usermod -aG docker $USER
           
       - name: Checkout repository
         uses: actions/checkout@v4
