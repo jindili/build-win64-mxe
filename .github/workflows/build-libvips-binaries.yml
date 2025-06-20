@@ -28,7 +28,7 @@ jobs:
       - name: Make build.sh executable
         run: chmod +x ./build.sh
 
-      # --- DIAGNOSTIC STEPS ADDED HERE ---
+      # --- DIAGNOSTIC STEPS (already correct indentation) ---
       - name: Debug Docker Environment
         run: |
           echo "Checking docker version:"
@@ -41,20 +41,19 @@ jobs:
           id
           echo "Attempting a simple docker run (hello-world):"
           docker run --rm hello-world || echo "hello-world failed"
-        # continue-on-error: true # Consider adding this so subsequent steps run even if one debug command fails
 
-      # --- ORIGINAL FAILING STEP ---
+      # --- ORIGINAL FAILING STEP - CORRECTED INDENTATION ---
       - name: Run libvips MXE build
-              run: |
-                # Use 'bash -x' for verbose output of the script's execution
-                # You might also want to temporarily remove the `\ ` (backslash space)
-                # continuation characters to make the command single-line for clarity in logs,
-                # though they are technically correct.
-                docker run \
-                  --rm \
-                  -v "$(pwd):/src" \
-                  ghcr.io/${{ github.repository }}:latest \
-                  /bin/bash -xc "/src/build.sh" # Execute build.sh with verbose bash output
+        run: | # <--- THIS IS THE CORRECT INDENTATION for 'run:'
+          # Use 'bash -x' for verbose output of the script's execution
+          # You might also want to temporarily remove the `\ ` (backslash space)
+          # continuation characters to make the command single-line for clarity in logs,
+          # though they are technically correct.
+          docker run \
+            --rm \
+            -v "$(pwd):/src" \
+            ghcr.io/${{ github.repository }}:latest \
+            /bin/bash -xc "/src/build.sh" # Execute build.sh with verbose bash output
 
       - name: Upload Windows Binaries
         uses: actions/upload-artifact@v4
