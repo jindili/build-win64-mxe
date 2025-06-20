@@ -45,12 +45,16 @@ jobs:
 
       # --- ORIGINAL FAILING STEP ---
       - name: Run libvips MXE build
-        run: |
-          docker run \
-            --rm \
-            -v "$(pwd):/src" \
-            ghcr.io/${{ github.repository }}:latest \
-            /src/build.sh
+              run: |
+                # Use 'bash -x' for verbose output of the script's execution
+                # You might also want to temporarily remove the `\ ` (backslash space)
+                # continuation characters to make the command single-line for clarity in logs,
+                # though they are technically correct.
+                docker run \
+                  --rm \
+                  -v "$(pwd):/src" \
+                  ghcr.io/${{ github.repository }}:latest \
+                  /bin/bash -xc "/src/build.sh" # Execute build.sh with verbose bash output
 
       - name: Upload Windows Binaries
         uses: actions/upload-artifact@v4
