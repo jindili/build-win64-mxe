@@ -8,6 +8,14 @@ jobs:
     runs-on: ubuntu-latest # Or ubuntu-24.04
 
     steps:
+      - name: Remove conflicting containerd
+        run: sudo apt-get remove -y containerd
+      
+      - name: Clean up and update
+        run: |
+          sudo apt-get update
+          sudo apt-get autoremove -y
+    
       - name: Install Docker
         run: |
           sudo apt-get update
