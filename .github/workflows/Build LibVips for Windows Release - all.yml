@@ -14,41 +14,29 @@ jobs:
 
       - name: Build LibVips (all --with-hevc)
         run: |
-          ./build.sh vips-all --with-hevc
+          ./build.sh vips-all x86_64-w64-mingw32.shared --with-hevc
 
       - name: Find generated artifacts
         id: find_artifacts
         run: |
-          # The build.sh script places artifacts in the 'packaging' directory.
-          # We need to find the specific zip file(s) to upload.
-          # Assuming only one zip file is generated per build run,
-          # or we want to upload all of them.
-          ZIP_FILE=$(find packaging -name "vips-dev-*.zip" | head -n 1)
-          if [ -z "$ZIP_FILE" ]; then
-            echo "No zip file found in 'packaging' directory!"
-            exit 1
-          fi
-          echo "Found artifact: $ZIP_FILE"
-          echo "ARTIFACT_PATH=$ZIP_FILE" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=$(basename $ZIP_FILE)" >> $GITHUB_OUTPUT
+          ZIP_FILES=$(find packaging -name "*.zip")
+          echo "Found artifact: $ZIP_FILES"
+          echo "ARTIFACT_PATH=$ZIP_FILES" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true # Set to true to create a draft release first
+          tag_name: v8.17.0
+          release_name: Release v8.17.0
+          draft: false
           prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload all zips to release
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.find_artifacts.outputs.ARTIFACT_PATH }}
-          asset_name: ${{ steps.find_artifacts.outputs.ARTIFACT_NAME }}
-          asset_content_type: application/zip
+          files: packaging/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
