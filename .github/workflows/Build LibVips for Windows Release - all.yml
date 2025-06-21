@@ -12,6 +12,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Cache MXE build directory
+      - name: Cache MXE
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/mxe
+          key: mxe-${{ runner.os }}-${{ hashFiles('mxe/**') }}
+          restore-keys: |
+            mxe-${{ runner.os }}-
+
+      # Cache Meson build directory
+      - name: Cache Meson build
+        uses: actions/cache@v4
+        with:
+          path: build/
+          key: meson-build-${{ runner.os }}-${{ hashFiles('**/meson.build') }}
+          restore-keys: |
+            meson-build-${{ runner.os }}-
+
       - name: Build LibVips (all --with-hevc)
         run: |
           ./build.sh vips-all x86_64-w64-mingw32.shared --with-hevc
