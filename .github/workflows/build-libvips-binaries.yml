@@ -1,83 +1,77 @@
-name: Build libvips Windows Binaries
+name: Build LibVips for Windows Release
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger on new tags like v1.0.0, v8.15.0, etc.
 
 jobs:
-  build_binaries:
-    runs-on: ubuntu-latest # Or ubuntu-24.04
+  build:
+    runs-on: ubuntu-latest # Using a Linux runner as build-win66-mxe cross-compiles
 
-    steps:        
-      # - name: Remove conflicting containerd packages
-      #   run: |
-      #     sudo apt-get remove -y containerd containerd.io || true
-
-      - name: Ensure Docker is running
-        run: |
-          sudo systemctl start docker
-          sudo systemctl status docker
-          docker version
-          docker info
-      
-      # - name: Clean up and update
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get autoremove -y
-    
-      # - name: Install Docker
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y docker.io
-      #     sudo systemctl start docker
-      #     sudo usermod -aG docker $USER
-          
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker (if not already available)
+        # GitHub Actions runners usually have Docker pre-installed, but this ensures it.
+        # You might not need this step explicitly, but it's good for clarity.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo usermod -aG docker ${{ github.actor }}
+          # Newgrp is needed to apply the group change immediately
+          newgrp docker
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Build LibVips (all --with-hevc)
+        run: |
+          ./build.sh all --with-hevc
+        env:
+          # Optional: Adjust Docker memory/CPU if needed for large builds
+          # DOCKER_MEM_LIMIT: "8g"
+          # DOCKER_CPU_LIMIT: "4"
+          # These env vars are used by build.sh
+          # See build-win64-mxe/build.sh for more options
+          # For example, to only build x86_64:
+          # MXE_TARGETS: "x86_64-w64-mingw32.shared"
+          # To build a specific libvips version:
+          # LIBVIPS_COMMIT: "some_commit_hash"
+          # LIBVIPS_REF: "v8.15.0"
+
+      - name: Find generated artifacts
+        id: find_artifacts
+        run: |
+          # The build.sh script places artifacts in the 'packaging' directory.
+          # We need to find the specific zip file(s) to upload.
+          # Assuming only one zip file is generated per build run,
+          # or we want to upload all of them.
+          ZIP_FILE=$(find packaging -name "vips-dev-*.zip" | head -n 1)
+          if [ -z "$ZIP_FILE" ]; then
+            echo "No zip file found in 'packaging' directory!"
+            exit 1
+          fi
+          echo "Found artifact: $ZIP_FILE"
+          echo "ARTIFACT_PATH=$ZIP_FILE" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=$(basename $ZIP_FILE)" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true # Set to true to create a draft release first
+          prerelease: false
 
-      - name: Pull the MXE build image
-        run: |
-          docker pull ghcr.io/${{ github.repository }}:latest
-
-      - name: Make build.sh executable
-        run: chmod +x ./build.sh
-
-      - name: Debug Docker Environment
-        run: |
-          echo "Checking docker version:"
-          docker --version || echo "Docker not found or version check failed"
-          echo "Checking docker info:"
-          docker info || echo "Docker info failed"
-          echo "Checking PATH:"
-          echo $PATH
-          echo "Checking current user and groups:"
-          id
-          echo "Attempting a simple docker run (hello-world):"
-          docker run --rm hello-world || echo "hello-world failed"
-
-      - name: Ensure Docker in PATH
-        run: |
-          export PATH=$PATH:/usr/bin:/usr/local/bin
-          command -v docker || { echo "docker not in PATH after export"; exit 1; }
-          ./build.sh ...
-      
-      - name: Run build.sh
-        run: |
-          echo "PATH before running build.sh: $PATH"
-          command -v docker || { echo "docker not in PATH"; exit 1; }
-          ./build.sh ...
-
-      - name: Upload Windows Binaries
-        uses: actions/upload-artifact@v4
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: libvips-windows-binaries
-          path: ./releases/
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.find_artifacts.outputs.ARTIFACT_PATH }}
+          asset_name: ${{ steps.find_artifacts.outputs.ARTIFACT_NAME }}
+          asset_content_type: application/zip
