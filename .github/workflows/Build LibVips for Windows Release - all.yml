@@ -40,14 +40,6 @@ jobs:
         with:
           name: vips-zips
           path: packaging/*.zip
-    
-
-      - name: Find generated artifacts
-        id: find_artifacts
-        run: |
-          ZIP_FILES=$(find packaging -name "*.zip")
-          echo "Found artifact: $ZIP_FILES"
-          echo "ARTIFACT_PATH=$ZIP_FILES" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
