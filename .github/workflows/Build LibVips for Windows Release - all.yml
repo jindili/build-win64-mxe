@@ -12,17 +12,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker (if not already available)
-        # GitHub Actions runners usually have Docker pre-installed, but this ensures it.
-        # You might not need this step explicitly, but it's good for clarity.
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo usermod -aG docker ${{ github.actor }}
-          # Newgrp is needed to apply the group change immediately
-          newgrp docker
-
       - name: Build LibVips (all --with-hevc)
         run: |
           ./build.sh all --with-hevc
