@@ -26,17 +26,6 @@ jobs:
       - name: Build LibVips (all --with-hevc)
         run: |
           ./build.sh all --with-hevc
-        env:
-          # Optional: Adjust Docker memory/CPU if needed for large builds
-          # DOCKER_MEM_LIMIT: "8g"
-          # DOCKER_CPU_LIMIT: "4"
-          # These env vars are used by build.sh
-          # See build-win64-mxe/build.sh for more options
-          # For example, to only build x86_64:
-          # MXE_TARGETS: "x86_64-w64-mingw32.shared"
-          # To build a specific libvips version:
-          # LIBVIPS_COMMIT: "some_commit_hash"
-          # LIBVIPS_REF: "v8.15.0"
 
       - name: Find generated artifacts
         id: find_artifacts
