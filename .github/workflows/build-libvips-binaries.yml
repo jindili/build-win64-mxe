@@ -19,10 +19,10 @@ jobs:
           docker version
           docker info
       
-      - name: Clean up and update
-        run: |
-          sudo apt-get update
-          sudo apt-get autoremove -y
+      # - name: Clean up and update
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get autoremove -y
     
       # - name: Install Docker
       #   run: |
@@ -51,7 +51,6 @@ jobs:
       - name: Make build.sh executable
         run: chmod +x ./build.sh
 
-      # --- DIAGNOSTIC STEPS (already correct indentation) ---
       - name: Debug Docker Environment
         run: |
           echo "Checking docker version:"
@@ -65,18 +64,17 @@ jobs:
           echo "Attempting a simple docker run (hello-world):"
           docker run --rm hello-world || echo "hello-world failed"
 
-      # --- ORIGINAL FAILING STEP - CORRECTED INDENTATION ---
-      - name: Run libvips MXE build
-        run: | # <--- THIS IS THE CORRECT INDENTATION for 'run:'
-          # Use 'bash -x' for verbose output of the script's execution
-          # You might also want to temporarily remove the `\ ` (backslash space)
-          # continuation characters to make the command single-line for clarity in logs,
-          # though they are technically correct.
-          docker run \
-            --rm \
-            -v "$(pwd):/src" \
-            ghcr.io/${{ github.repository }}:latest \
-            /bin/bash -xc "/src/build.sh" # Execute build.sh with verbose bash output
+      - name: Ensure Docker in PATH
+        run: |
+          export PATH=$PATH:/usr/bin:/usr/local/bin
+          command -v docker || { echo "docker not in PATH after export"; exit 1; }
+          ./build.sh ...
+      
+      - name: Run build.sh
+        run: |
+          echo "PATH before running build.sh: $PATH"
+          command -v docker || { echo "docker not in PATH"; exit 1; }
+          ./build.sh ...
 
       - name: Upload Windows Binaries
         uses: actions/upload-artifact@v4
