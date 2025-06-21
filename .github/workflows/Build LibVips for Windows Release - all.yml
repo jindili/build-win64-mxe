@@ -49,8 +49,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v8.17.0
-          release_name: Release v8.17.0
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
         env:
