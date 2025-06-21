@@ -1,9 +1,8 @@
 name: Build LibVips for Windows Release - all
 
-on:
-  push:
-    tags:
-      - 'v*.*.*' # Trigger on new tags like v1.0.0, v8.15.0, etc.
+on: workflow_dispatch
+
+permissions: {}
 
 jobs:
   build:
