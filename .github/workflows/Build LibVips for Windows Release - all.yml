@@ -14,7 +14,7 @@ jobs:
 
       - name: Build LibVips (all --with-hevc)
         run: |
-          ./build.sh all --with-hevc
+          ./build.sh vips-all --with-hevc
 
       - name: Find generated artifacts
         id: find_artifacts
