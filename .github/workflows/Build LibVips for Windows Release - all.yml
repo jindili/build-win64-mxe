@@ -42,6 +42,9 @@ jobs:
           name: vips-zips
           path: packaging/*.zip
 
+      - name: List zips to upload
+        run: ls -l packaging/*.zip
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -52,10 +55,11 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Upload all zips to release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.create_release.outputs.tag_name }}
           files: packaging/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
