@@ -32,7 +32,8 @@ jobs:
 
       - name: Build LibVips (all --with-hevc)
         run: |
-          ./build.sh vips-all x86_64-w64-mingw32.shared --with-hevc
+          # ./build.sh vips-all x86_64-w64-mingw32.shared --with-hevc
+          ./build.sh vips-all --target x86_64-w64-mingw32.shared --with-hevc
 
       - name: Upload all zips
         uses: actions/upload-artifact@v4
