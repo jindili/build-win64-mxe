@@ -1,6 +1,10 @@
 name: Build LibVips for Windows Release - all
-
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name for the release"
+        required: true
 
 permissions:
   contents: write
@@ -12,24 +16,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Cache MXE build directory
-      - name: Cache MXE
-        uses: actions/cache@v4
-        with:
-          path: /usr/local/mxe
-          key: mxe-${{ runner.os }}-${{ hashFiles('mxe/**') }}
-          restore-keys: |
-            mxe-${{ runner.os }}-
-
-      # Cache Meson build directory
-      - name: Cache Meson build
-        uses: actions/cache@v4
-        with:
-          path: build/
-          key: meson-build-${{ runner.os }}-${{ hashFiles('**/meson.build') }}
-          restore-keys: |
-            meson-build-${{ runner.os }}-
 
       - name: Build LibVips (all --with-hevc)
         run: |
@@ -45,7 +31,19 @@ jobs:
       - name: List zips to upload
         run: ls -l packaging/*.zip
 
+      - name: Check if release exists
+        id: check_release
+        run: |
+          if gh release view "${{ github.event.inputs.tag_name }}" &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Create GitHub Release
+        if: steps.check_release.outputs.exists == 'false'
         id: create_release
         uses: actions/create-release@v1
         with:
