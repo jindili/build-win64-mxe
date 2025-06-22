@@ -1,0 +1,35 @@
+name: test-realse create and upload file
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Using a Linux runner as build-win66-mxe cross-compiles
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List zips to upload
+        run: ls -l packaging/*.zip
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          release_name: Release ${{ github.event.inputs.tag_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload all zips to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          files: packaging/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
