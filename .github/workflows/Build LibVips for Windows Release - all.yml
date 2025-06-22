@@ -49,17 +49,17 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.event.inputs.tag_name }}
+          release_name: Release ${{ github.event.inputs.tag_name }}
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Upload all zips to release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.create_release.outputs.tag_name }}
+          tag_name: ${{ github.event.inputs.tag_name }}
           files: packaging/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
