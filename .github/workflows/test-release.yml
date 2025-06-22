@@ -31,6 +31,9 @@ jobs:
       # - name: List zips to upload
       #   run: ls -l packaging/*.zip
 
+      - name: Fetch all tags
+        run: git fetch --tags
+
       - name: Check if release exists
         id: check_release
         run: |
