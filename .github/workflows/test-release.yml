@@ -1,4 +1,4 @@
-name: test-realse create and upload file
+name: test Build LibVips for Windows Release - all
 on:
   workflow_dispatch:
     inputs:
@@ -14,11 +14,22 @@ jobs:
     runs-on: ubuntu-latest # Using a Linux runner as build-win66-mxe cross-compiles
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
 
-      - name: List zips to upload
-        run: ls -l README.md
+      # - name: Build LibVips (all --with-hevc)
+      #   run: |
+      #     # ./build.sh vips-all x86_64-w64-mingw32.shared --with-hevc
+      #     ./build.sh vips-all --target x86_64-w64-mingw32.shared --with-hevc
+
+      # - name: Upload all zips
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: vips-zips
+      #     path: packaging/*.zip
+
+      # - name: List zips to upload
+      #   run: ls -l packaging/*.zip
 
       - name: Check if release exists
         id: check_release
@@ -33,7 +44,6 @@ jobs:
       
       - name: Create GitHub Release
         if: steps.check_release.outputs.exists == 'false'
-        id: create_release
         uses: actions/create-release@v1
         with:
           tag_name: ${{ github.event.inputs.tag_name }}
@@ -43,10 +53,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload all zips to release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.tag_name }}
-          files: README.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Upload all zips to release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     tag_name: ${{ github.event.inputs.tag_name }}
+      #     files: packaging/*.zip
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
