@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest # Using a Linux runner as build-win66-mxe cross-compiles
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # - name: Build LibVips (all --with-hevc)
       #   run: |
