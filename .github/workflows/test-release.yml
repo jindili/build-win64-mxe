@@ -1,5 +1,10 @@
 name: test-realse create and upload file
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name for the release"
+        required: true
 
 permissions:
   contents: write
