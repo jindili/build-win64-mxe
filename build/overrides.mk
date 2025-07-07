@@ -12,16 +12,25 @@ libffi_URL      := https://github.com/libffi/libffi/releases/download/v$(libffi_
 
 # upstream version is 2.42.12
 # gdk-pixbuf is still used by OpenSlide
-gdk-pixbuf_VERSION  := 2.43.2
-gdk-pixbuf_CHECKSUM := a386a85c74021fa62d22297db122d231cc68fdd342761fb978c446f73f2606dc
+gdk-pixbuf_VERSION  := 2.43.3
+gdk-pixbuf_CHECKSUM := ed4c5d16346a5b4e95326731de9700fad70d03bbd2f9324732e6c94f42d869d7
 gdk-pixbuf_PATCHES  := $(realpath $(sort $(wildcard $(dir $(lastword $(MAKEFILE_LIST)))/patches/gdk-pixbuf-[0-9]*.patch)))
 gdk-pixbuf_SUBDIR   := gdk-pixbuf-$(gdk-pixbuf_VERSION)
 gdk-pixbuf_FILE     := gdk-pixbuf-$(gdk-pixbuf_VERSION).tar.xz
 gdk-pixbuf_URL      := https://download.gnome.org/sources/gdk-pixbuf/$(call SHORT_PKG_VERSION,gdk-pixbuf)/$(gdk-pixbuf_FILE)
 
+# no longer needed by libvips, but some of the deps need it
+# upstream version is 2.14.3
+libxml2_VERSION  := 2.14.4
+libxml2_CHECKSUM := 24175ec30a97cfa86bdf9befb7ccf4613f8f4b2713c5103e0dd0bc9c711a2773
+libxml2_PATCHES  := $(realpath $(sort $(wildcard $(dir $(lastword $(MAKEFILE_LIST)))/patches/libxml2-[0-9]*.patch)))
+libxml2_SUBDIR   := libxml2-$(libxml2_VERSION)
+libxml2_FILE     := libxml2-$(libxml2_VERSION).tar.xz
+libxml2_URL      := https://download.gnome.org/sources/libxml2/$(call SHORT_PKG_VERSION,libxml2)/$(libxml2_FILE)
+
 # upstream version is 1.6.48
-libpng_VERSION  := 1.6.49
-libpng_CHECKSUM := 43182aa48e39d64b1ab4ec6b71ab3e910b67eed3a0fff3777cf8cf40d6ef7024
+libpng_VERSION  := 1.6.50
+libpng_CHECKSUM := 4df396518620a7aa3651443e87d1b2862e4e88cad135a8b93423e01706232307
 libpng_PATCHES  := $(realpath $(sort $(wildcard $(dir $(lastword $(MAKEFILE_LIST)))/patches/libpng-[0-9]*.patch)))
 libpng_SUBDIR   := libpng-$(libpng_VERSION)
 libpng_FILE     := libpng-$(libpng_VERSION).tar.xz
@@ -68,8 +77,8 @@ librsvg_FILE     := librsvg-$(librsvg_VERSION).tar.xz
 librsvg_URL      := https://download.gnome.org/sources/librsvg/$(call SHORT_PKG_VERSION,librsvg)/$(librsvg_FILE)
 
 # upstream version is 1.51.0
-pango_VERSION  := 1.56.3
-pango_CHECKSUM := 2606252bc25cd8d24e1b7f7e92c3a272b37acd6734347b73b47a482834ba2491
+pango_VERSION  := 1.56.4
+pango_CHECKSUM := 17065e2fcc5f5a5bdbffc884c956bfc7c451a96e8c4fb2f8ad837c6413cb5a01
 pango_PATCHES  := $(realpath $(sort $(wildcard $(dir $(lastword $(MAKEFILE_LIST)))/patches/pango-[0-9]*.patch)))
 pango_SUBDIR   := pango-$(pango_VERSION)
 pango_FILE     := pango-$(pango_VERSION).tar.xz
@@ -116,8 +125,8 @@ pixman_FILE     := pixman-$(pixman_VERSION).tar.xz
 pixman_URL      := https://cairographics.org/releases/$(pixman_FILE)
 
 # upstream version is 2.16.0
-fontconfig_VERSION  := 2.16.2
-fontconfig_CHECKSUM := 165b8fd2a119864c87464b233986c4a1bc09efb09c65de1ca40cc1e85ffb77e2
+fontconfig_VERSION  := 2.17.1
+fontconfig_CHECKSUM := 9f5cae93f4fffc1fbc05ae99cdfc708cd60dfd6612ffc0512827025c026fa541
 fontconfig_PATCHES  := $(realpath $(sort $(wildcard $(dir $(lastword $(MAKEFILE_LIST)))/patches/fontconfig-[0-9]*.patch)))
 fontconfig_SUBDIR   := fontconfig-$(fontconfig_VERSION)
 fontconfig_FILE     := fontconfig-$(fontconfig_VERSION).tar.xz
@@ -143,8 +152,8 @@ libjpeg-turbo_FILE     := libjpeg-turbo-$(libjpeg-turbo_VERSION).tar.gz
 libjpeg-turbo_URL      := https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$(libjpeg-turbo_VERSION)/$(libjpeg-turbo_FILE)
 
 # upstream version is 23.09.0
-poppler_VERSION  := 25.06.0
-poppler_CHECKSUM := 8199532d38984fab46dbd0020ec9c40f20e928e33e9b4cc6043572603a821d83
+poppler_VERSION  := 25.07.0
+poppler_CHECKSUM := c504a9066dbdfebe377ad53cec641fd971ee96c4e1e8ca74e6c9c03d46d817ae
 poppler_PATCHES  := $(realpath $(sort $(wildcard $(dir $(lastword $(MAKEFILE_LIST)))/patches/poppler-[0-9]*.patch)))
 poppler_SUBDIR   := poppler-$(poppler_VERSION)
 poppler_FILE     := poppler-$(poppler_VERSION).tar.xz
